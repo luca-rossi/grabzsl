@@ -34,7 +34,7 @@ pip install -r requirements.txt
 
 ## Usage
 
-Before running the code, you need to download the datasets in the `data` folder. 4 datasets are currently supported: AWA, CUB, SUN, and FLO. The datasets are available [here](http://datasets.d2.mpi-inf.mpg.de/xian/xlsa17.zip). For each dataset, you only require 2 of the downloaded files: `res101.mat` with the features, and `att_splits.mat` with the attributes. Make sure you have these files in the appropriate folder for each dataset, e.g. `data/awa/res101.mat` and `data/awa/att_splits.mat` for the AWA dataset.
+Before running the code, you need to download the datasets in the `data` folder. 4 datasets are currently supported: AWA, CUB, SUN, and FLO. The datasets are available [here](http://datasets.d2.mpi-inf.mpg.de/xian/xlsa17.zip) (if the link doesn't work, copy it in a new tab instead of clicking on it). For each dataset, you only require 2 of the downloaded files: `res101.mat` with the features, and `att_splits.mat` with the attributes. Make sure you have these files in the appropriate folder for each dataset, e.g. `data/awa/res101.mat` and `data/awa/att_splits.mat` for the AWA dataset.
 
 You can either run the scripts directly with your own arguments (defined in `args.py`), e.g.:
 
