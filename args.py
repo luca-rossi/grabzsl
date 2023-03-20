@@ -1,9 +1,9 @@
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--dataset', default='FLO', help='dataset name (folder containing the res101.mat and att_splits.mat files)')
-parser.add_argument('--dataroot', default='../data', help='path to dataset')
-parser.add_argument('--split', default='', help='name of the split (e.g. \'_gcs\', \'_mas\', etc.)')
+parser.add_argument('--dataset', '-d', default='FLO', help='dataset name (folder containing the res101.mat and att_splits.mat files)')
+parser.add_argument('--dataroot', '-p', default='./data', help='path to dataset')
+parser.add_argument('--split', '-s', default='', help='name of the split (e.g. \'_gcs\', \'_mas\', etc.)')
 parser.add_argument('--seed', type=int, help='manual seed (for reproducibility)')
 parser.add_argument('--n_features', type=int, default=2048, help='size of visual features')
 parser.add_argument('--n_attributes', type=int, default=85, help='size of semantic features')

@@ -39,7 +39,7 @@ Before running the code, you need to download the datasets in the `data` folder.
 You can either run the scripts directly with your own arguments (defined in `args.py`), e.g.:
 
 ```bash
-python run_clswgan.py --dataset AWA --split gcs --n_epochs 20
+python run_clswgan.py --dataset AWA2 --split gcs --n_epochs 20
 ```
 
 or you can use the provided scripts to run the experiments from the paper:
@@ -53,7 +53,7 @@ This will train and evaluate the model on the selected dataset and split.
 To generate the splits, run `run_splitter.py` with the desired dataset and splitting method, e.g.:
 
 ```bash
-python run_splitter.py --dataset awa2 --splitter gcs
+python run_splitter.py --dataset AWA2 --split gcs
 ```
 
 ## License
