@@ -8,6 +8,7 @@ from grabzsl.trainer_tfvaegan import TrainerTfvaegan
 # init seed and cuda
 if args.seed is None:
 	args.seed = random.randint(1, 10000)
+print('Split: ', ('none' if args.split == '' else args.split))
 print('Random Seed: ', args.seed)
 random.seed(args.seed)
 torch.manual_seed(args.seed)
