@@ -8,8 +8,8 @@ from grabzsl.trainer_tfvaegan import TrainerTfvaegan
 # init seed and cuda
 if args.seed is None:
 	args.seed = random.randint(1, 10000)
-print('Split: ', ('none' if args.split == '' else args.split))
-print('Random Seed: ', args.seed)
+print('Split:', ('none' if args.split == '' else args.split))
+print('Random Seed:', args.seed)
 random.seed(args.seed)
 torch.manual_seed(args.seed)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -18,7 +18,7 @@ if device.type == 'cuda':
 cudnn.benchmark = True
 # load data
 data = Data(dataset_name=args.dataset, split=args.split, dataroot=args.dataroot)
-print('Training samples: ', data.dataset_size)
+print('Training samples:', data.dataset_size)
 # train the TF-VAEGAN
 tfvaegan = TrainerTfvaegan(data, args.dataset, n_features=args.n_features, n_attributes=args.n_attributes,
 			 			latent_size=args.latent_size, features_per_class=args.features_per_class, batch_size=args.batch_size,

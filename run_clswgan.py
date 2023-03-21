@@ -9,8 +9,8 @@ from grabzsl.trainer_clswgan import TrainerClswgan
 # init seed and cuda
 if args.seed is None:
 	args.seed = random.randint(1, 10000)
-print('Split: ', ('none' if args.split == '' else args.split))
-print('Random Seed: ', args.seed)
+print('Split:', ('none' if args.split == '' else args.split))
+print('Random Seed:', args.seed)
 random.seed(args.seed)
 torch.manual_seed(args.seed)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -19,7 +19,7 @@ if device.type == 'cuda':
 cudnn.benchmark = True
 # load data
 data = Data(dataset_name=args.dataset, split=args.split, dataroot=args.dataroot)
-print('Training samples: ', data.dataset_size)
+print('Training samples:', data.dataset_size)
 # train a preclassifier on seen classes
 train_X = data.train_X
 train_Y = data.map_labels(data.train_Y, data.seen_classes)
