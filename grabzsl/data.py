@@ -94,3 +94,9 @@ class Data():
 			syn_X.narrow(0, i * num_per_class, num_per_class).copy_(fake.data.cpu())
 			syn_Y.narrow(0, i * num_per_class, num_per_class).fill_(curr_class)
 		return syn_X, syn_Y
+
+	def get_n_classes(self):
+		return self.attributes.size(0)
+
+	def get_n_attributes(self):
+		return self.attributes.size(1)
