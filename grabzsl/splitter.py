@@ -65,6 +65,8 @@ class Splitter():
 		if save:
 			if split == 'mas':
 				split += str(self.mas_k)
+			if inverse:
+				split += '_inv'
 			sio.savemat(self.path + '/att_splits_' + split + '.mat', matcontent_att_splits_new)
 			print('Saved')
 
