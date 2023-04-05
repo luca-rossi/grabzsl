@@ -19,9 +19,6 @@ if device.type == 'cuda':
 cudnn.benchmark = True
 # load data
 data = Data(dataset_name=args.dataset, split=args.split, dataroot=args.dataroot)
-print('Number of classes:', data.get_n_classes())
-print('Number of attributes:', data.get_n_attributes())
-print('Training samples:', data.dataset_size)
 # train a preclassifier on seen classes
 train_X = data.train_X
 train_Y = data.map_labels(data.train_Y, data.seen_classes)

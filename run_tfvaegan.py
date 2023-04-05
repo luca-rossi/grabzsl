@@ -18,9 +18,6 @@ if device.type == 'cuda':
 cudnn.benchmark = True
 # load data
 data = Data(dataset_name=args.dataset, split=args.split, dataroot=args.dataroot)
-print('Number of classes:', data.get_n_classes())
-print('Number of attributes:', data.get_n_attributes())
-print('Training samples:', data.dataset_size)
 # train the TF-VAEGAN
 tfvaegan = TrainerTfvaegan(data, args.dataset, n_features=args.n_features, n_attributes=data.get_n_attributes(),
 			 			latent_size=data.get_n_attributes(), features_per_class=args.features_per_class, batch_size=args.batch_size,

@@ -41,6 +41,11 @@ class Data():
 		self.seen_classes = torch.from_numpy(np.unique(self.train_Y.numpy()))
 		self.unseen_classes = torch.from_numpy(np.unique(self.test_unseen_Y.numpy()))
 		self.dataset_size = self.train_X.size(0)
+		# print dataset info
+		print('Dataset: %s' % dataset_name)
+		print('Number of classes: %d (seen: %d, unseen: %d)' % (self.attributes.size(0), self.seen_classes.size(0), self.unseen_classes.size(0)))
+		print('Number of attributes:', self.attributes.size(1))
+		print('Training samples:', self.train_X.size(0))
 
 	def map_labels(self, label, classes):
 		'''
