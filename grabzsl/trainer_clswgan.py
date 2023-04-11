@@ -8,7 +8,7 @@ class TrainerClswgan():
 	This class implements the training and evaluation of the CLSWGAN model.
 	'''
 	def __init__(self, data, dataset_name, pre_classifier, n_features=2048, n_attributes=85, latent_size=85, features_per_class=1800,
-				batch_size=64, hidden_size=4096, n_epochs=30, n_classes=50, n_critic_loops=5, lr=0.001, lr_cls=0.001, beta1=0.5,
+				batch_size=64, hidden_size=4096, n_epochs=30, n_classes=50, n_critic_iters=5, lr=0.001, lr_cls=0.001, beta1=0.5,
 				weight_gp=10, weight_precls=1, device='cpu', verbose=False):
 		'''
 		Setup models, optimizers, and other parameters.
@@ -24,7 +24,7 @@ class TrainerClswgan():
 		self.hidden_size = hidden_size
 		self.n_epochs = n_epochs
 		self.n_classes = n_classes
-		self.n_critic_loops = n_critic_loops
+		self.n_critic_iters = n_critic_iters
 		self.lr_cls = lr_cls
 		self.weight_gp = weight_gp
 		self.weight_precls = weight_precls
@@ -67,14 +67,14 @@ class TrainerClswgan():
 
 	def __train_epoch(self, epoch):
 		'''
-		Train the models for one epoch: train the critic for n_critic_loops steps, then train the generator for one step.
+		Train the models for one epoch: train the critic for n_critic_iters steps, then train the generator for one step.
 		'''
 		for i in range(0, self.data.dataset_size, self.batch_size):
 			# unfreeze the critic parameters for training
 			for p in self.model_critic.parameters():
 				p.requires_grad = True
-			# train the critic for n_critic_loops steps
-			for c in range(self.n_critic_loops):
+			# train the critic for n_critic_iters steps
+			for c in range(self.n_critic_iters):
 				loss_critic, wasserstein = self.__critic_step()
 			# freeze the critic parameters to train the generator
 			for p in self.model_critic.parameters():

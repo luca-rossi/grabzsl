@@ -1,6 +1,6 @@
 # Generalizability and Robustness Evaluation of Attribute-Based Zero-Shot Learning
 
-This repository contains the code to replicate the experiments in the paper *Generalizability and Robustness Evaluation of Attribute-Based Zero-Shot Learning* (forthcoming), as well as an improved implementation for the evaluated models (CLSWGAN and TFVAEGAN).
+This repository contains the code to replicate the experiments in the paper *Generalizability and Robustness Evaluation of Attribute-Based Zero-Shot Learning* (forthcoming), as well as an improved implementation for the evaluated models (CLSWGAN, TFVAEGAN, and FREE).
 
 ## Abstract
 
@@ -12,17 +12,18 @@ This repository contains the code to replicate the experiments in the paper *Gen
 
 ## Code
 
-This repository consists of three main parts:
+This repository consists of four main parts:
 
 - `run_clswgan.py`: PyTorch implementation of the CLSWGAN model from the paper [Feature Generating Networks for Zero-Shot Learning](https://arxiv.org/abs/1712.00981).
 - `run_tfvaegan.py`: PyTorch implementation of the TFVAEGAN model from the paper [Latent Embedding Feedback and Discriminative Features for Zero-Shot Classification](https://www.ecva.net/papers/eccv_2020/papers_ECCV/papers/123670477.pdf).
+- `run_free.py`: PyTorch implementation of the FREE model from the paper [FREE: Feature Refinement for Generalized Zero-Shot Learning](https://arxiv.org/abs/2107.13807).
 - `run_splitter.py`: Implementation of the *splitter* proposed in the paper Generalizability and Robustness Evaluation of Attribute-Based Zero-Shot Learning (forthcoming).
 
-The code for the two models has been adapted from the original repositories ([CLSWGAN](https://www.mpi-inf.mpg.de/departments/computer-vision-and-machine-learning/research/zero-shot-learning/feature-generating-networks-for-zero-shot-learning/), [TFVAEGAN](https://github.com/akshitac8/tfvaegan)). The code provided here is a simplified version of the original code which has been heavily refactored, documented, and optimized for clarity and extensibility. The code for the splitter is original.
+The code for the three models has been adapted from the original repositories ([CLSWGAN](https://www.mpi-inf.mpg.de/departments/computer-vision-and-machine-learning/research/zero-shot-learning/feature-generating-networks-for-zero-shot-learning/), [TFVAEGAN](https://github.com/akshitac8/tfvaegan), [FREE](https://github.com/shiming-chen/FREE)). The code provided here is a simplified version of the original code which has been heavily refactored, documented, and optimized for clarity and extensibility. The code for the splitter is original.
 
 The splitter uses particular methods to generate new splits of seen/unseen classes and attributes in the original dataset. Three splitting methods are currently implemented, although more will be added in the future: Greedy Class Split (GCS), Clustered Class Split (CCS), and Minimal Attribute Split (MAS).
 
-The two models are trained and tested on the generated splits to evaluate their generalizability and robustness. The results are reported in the forthcoming paper.
+The three models are trained and tested on the generated splits to evaluate their generalizability and robustness. The results are reported in the forthcoming paper.
 
 ## Installation
 
@@ -34,7 +35,7 @@ pip install -r requirements.txt
 
 ## Usage
 
-Before running the code, you need to download the datasets in the `data` folder. 4 datasets are currently supported: AWA, CUB, SUN, and FLO. The datasets are available [here](http://datasets.d2.mpi-inf.mpg.de/xian/xlsa17.zip) (if the link doesn't work, copy it in a new tab instead of clicking on it). For each dataset, you only require 2 of the downloaded files: `res101.mat` with the features, and `att_splits.mat` with the attributes. Make sure you have these files in the appropriate folder for each dataset, e.g. `data/awa/res101.mat` and `data/awa/att_splits.mat` for the AWA dataset.
+Before running the code, you need to download the datasets in the `data` folder. 4 datasets are currently supported: AWA2, CUB, SUN, and FLO. The datasets are available [here](http://datasets.d2.mpi-inf.mpg.de/xian/xlsa17.zip) (if the link doesn't work, copy it in a new tab instead of clicking on it). For each dataset, you only require 2 of the downloaded files: `res101.mat` with the features, and `att_splits.mat` with the attributes. Make sure you have these files in the appropriate folder for each dataset, e.g. `data/awa/res101.mat` and `data/awa/att_splits.mat` for the AWA2 dataset.
 
 You can either run the scripts directly with your own arguments (defined in `args.py`), e.g.:
 

@@ -90,6 +90,35 @@ class Decoder(nn.Module):
 	def get_hidden_features(self):
 		return self.hidden_features.detach()
 
+class FRDecoder(nn.Module):
+	'''
+	Decoder network used in the FREE model. It produces a large vector h of dimension n_attributes * 2,
+	where the first half learns to generate centroids (as the SAMC loss is applied to it).
+	So these two halves encode means and standard deviations, and are used to reconstruct the attribute vector.
+	'''
+	def __init__(self, n_features, n_attributes, hidden_size=4096):
+		super(FRDecoder, self).__init__()
+		self.n_attributes = n_attributes
+		self.fc1 = nn.Linear(n_features, hidden_size)
+		self.fc2 = nn.Linear(hidden_size, n_attributes * 2)
+		self.lrelu = nn.LeakyReLU(0.2, True)
+		self.sigmoid = nn.Sigmoid()
+		# define the hidden layer to detach for the feedback module
+		self.hidden_features = None
+		self.apply(init_weights)
+
+	def forward(self, x):
+		self.hidden_features = self.lrelu(self.fc1(x))
+		h = self.fc2(self.hidden_features)
+		means, stds = h[:, :self.n_attributes], h[:, self.n_attributes:]
+		stds = self.sigmoid(stds)
+		h = torch.randn_like(means) * stds + means
+		h = self.sigmoid(h)
+		return means, h
+
+	def get_hidden_features(self):
+		return self.hidden_features.detach()
+
 class Encoder(nn.Module):
 	'''
 	VAE encoder network: takes in a feature vector and an attribute vector and outputs a distribution over the latent space.

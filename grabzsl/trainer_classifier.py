@@ -8,7 +8,8 @@ class TrainerClassifier():
 	This class trains a standard log softmax classifier. It is used for training the CLSWGAN pre-classifier and the ZSL and GZSL classifiers.
 	'''
 	def __init__(self, train_X, train_Y, data_loader, input_dim=None, n_attributes=85, batch_size=64, hidden_size=4096,
-				n_epochs=50, n_classes=50, lr=0.001, beta1=0.5, model_decoder=None, is_preclassifier=False, device='cpu', verbose=False):
+				n_epochs=50, n_classes=50, lr=0.001, beta1=0.5, model_decoder=None, is_preclassifier=False, is_decoder_fr=False,
+				device='cpu', verbose=False):
 		'''
 		Setup the dataset, model, optimizer, and other parameters.
 		'''
@@ -26,7 +27,8 @@ class TrainerClassifier():
 			self.seen_classes = data_loader.seen_classes
 			self.unseen_classes = data_loader.unseen_classes
 			self.model_decoder = model_decoder
-			# used for TF-VAEGAN
+			self.is_decoder_fr = is_decoder_fr
+			# used for TF-VAEGAN and FREE
 			if self.model_decoder:
 				# use the decoder to decode the dataset
 				self.model_decoder.eval()
@@ -88,7 +90,7 @@ class TrainerClassifier():
 			acc_H = 2 * acc_seen * acc_unseen / (acc_seen + acc_unseen)
 			if self.verbose:
 				print('GZSL: Seen: %.4f, Unseen: %.4f, H: %.4f' % (acc_seen, acc_unseen, acc_H))
-			if acc_H > best_H:
+			if acc_H > best_H or (acc_H == best_H and acc_seen > best_seen):
 				best_seen = acc_seen
 				best_unseen = acc_unseen
 				best_H = acc_H
@@ -154,8 +156,12 @@ class TrainerClassifier():
 		for i in range(0, n_features, self.batch_size):
 			end = min(n_features, start + self.batch_size)
 			part_features = features[start:end].to(self.device)
-			feat1 = self.model_decoder(part_features)
-			feat2 = self.model_decoder.get_hidden_features()
+			if self.is_decoder_fr:
+				_, feat2 = self.model_decoder(part_features)
+				feat1 = self.model_decoder.get_hidden_features()
+			else:				
+				feat1 = self.model_decoder(part_features)
+				feat2 = self.model_decoder.get_hidden_features()
 			new_features[start:end] = torch.cat([part_features, feat1, feat2], dim=1).data
 			start = end
 		return new_features
