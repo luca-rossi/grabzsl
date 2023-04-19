@@ -21,7 +21,7 @@ This repository consists of four main parts:
 
 The code for the three models has been adapted from the original repositories ([CLSWGAN](https://www.mpi-inf.mpg.de/departments/computer-vision-and-machine-learning/research/zero-shot-learning/feature-generating-networks-for-zero-shot-learning/), [TFVAEGAN](https://github.com/akshitac8/tfvaegan), [FREE](https://github.com/shiming-chen/FREE)). The code provided here is a simplified version of the original code which has been heavily refactored, documented, and optimized for clarity and extensibility. The code for the splitter is original.
 
-The splitter uses particular methods to generate new splits of seen/unseen classes and attributes in the original dataset. Three splitting methods are currently implemented, although more will be added in the future: Greedy Class Split (GCS), Clustered Class Split (CCS), and Minimal Attribute Split (MAS).
+The splitter uses particular methods to generate new splits of seen/unseen classes and attributes in the original dataset. Four splitting methods are currently implemented, although more will be added in the future: Greedy Class Split (GCS), Clustered Class Split (CCS), Minimal Attribute Split (MAS), and PCA Attribute Split (PAS).
 
 The three models are trained and tested on the generated splits to evaluate their generalizability and robustness. The results are reported in the forthcoming paper.
 

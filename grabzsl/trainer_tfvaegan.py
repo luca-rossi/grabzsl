@@ -134,7 +134,7 @@ class TrainerTfvaegan():
 		# train critic with fake batch
 		fake, _, _ = self.__generate_from_features(loop)
 		critic_fake = self.model_critic(fake.detach(), self.batch_attributes)
-		critic_fake = self.weight_critic*critic_fake.mean()
+		critic_fake = self.weight_critic * critic_fake.mean()
 		critic_fake.backward(self.one)
 		# gradient penalty
 		gradient_penalty = self.weight_critic * loss_grad_penalty_fn(self.model_critic, self.batch_features, fake.data, self.batch_attributes, self.batch_size, self.weight_gp, self.device)

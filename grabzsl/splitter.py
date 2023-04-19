@@ -1,12 +1,13 @@
 import numpy as np
 import scipy.io as sio
+from sklearn.decomposition import PCA
 import torch
 
 class Splitter():
 	'''
 	This class generates new splits of the dataset according to some splitting methods.
 	'''
-	def __init__(self, path, mas_k=40):
+	def __init__(self, path, mas_k=40, pas_k=40):
 		'''
 		Load dataset and initialize splitting methods with their parameters (if any).
 		'''
@@ -15,9 +16,11 @@ class Splitter():
 			'gcs': self.greedy_class_split,
 			'ccs': self.clustered_class_split,
 			'mas': self.minimal_attribute_split,
+			'pas': self.pca_attribute_split
 		}
 		self.path = path
 		self.mas_k = mas_k
+		self.pas_k = pas_k
 		# load dataset
 		matcontent_res101 = sio.loadmat(self.path + '/res101.mat')
 		self.matcontent_att_splits = sio.loadmat(self.path + '/att_splits.mat')
@@ -65,6 +68,8 @@ class Splitter():
 		if save:
 			if split == 'mas':
 				split += str(self.mas_k)
+			elif split == 'pas':
+				split += str(self.pas_k)
 			if inverse:
 				split += '_inv'
 			sio.savemat(self.path + '/att_splits_' + split + '.mat', matcontent_att_splits_new)
@@ -199,6 +204,20 @@ class Splitter():
 		new_attributes = np.array(new_attributes)
 		new_attributes = new_attributes.T
 		print(new_attributes.shape)
+		# seen and unseen remain the same, return new attributes
+		old_seen = torch.from_numpy(np.unique(self.seen_labels))
+		old_unseen = torch.from_numpy(np.unique(self.unseen_labels))
+		return old_seen, old_unseen, new_attributes
+
+	def pca_attribute_split(self, inverse=False):
+		'''
+		Splitting method: PCA Attribute Split (PAS)
+		Reduces the dimensionality of the attribute space by applying PCA.
+		'''
+		# PCA
+		pca = PCA(n_components=self.pas_k)
+		pca.fit(self.attributes)
+		new_attributes = pca.transform(self.attributes)
 		# seen and unseen remain the same, return new attributes
 		old_seen = torch.from_numpy(np.unique(self.seen_labels))
 		old_unseen = torch.from_numpy(np.unique(self.unseen_labels))
