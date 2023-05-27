@@ -1,10 +1,12 @@
 import random
 import torch
 import torch.backends.cudnn as cudnn
-from args import args
+from args import parse_args
 from grabzsl.data import Data
 from grabzsl.trainer_free import TrainerFree
 
+# parse arguments
+args = parse_args('FREE')
 # init seed and cuda
 if args.seed is None:
 	args.seed = random.randint(1, 10000)
@@ -20,7 +22,7 @@ cudnn.deterministic = True
 # load data
 data = Data(dataset_name=args.dataset, split=args.split, dataroot=args.dataroot)
 # define center loss type depending on the type of dataset
-min_margin = args.dataset in ['AWA1','AWA2','APY']
+min_margin = args.dataset == 'AWA2'
 # train the FREE model
 free = TrainerFree(data, args.dataset, n_features=args.n_features, n_attributes=data.get_n_attributes(),
 				latent_size=data.get_n_attributes(), features_per_class=args.features_per_class, batch_size=args.batch_size,

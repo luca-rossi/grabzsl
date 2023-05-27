@@ -35,11 +35,11 @@ def loss_reconstruction_fn(pred, gt):
 	return loss.sum() / loss.size(0)
 
 class LossMarginCenter(nn.Module):
-	"""
+	'''
 	Self-Adaptive Margin Center loss.
 	It aims minimize the distances between samples of the same class and maximize the distances between samples of different classes,
 	and does so by learning a set of label centers.
-	"""
+	'''
 	def __init__(self, n_classes=10, n_attributes=312, min_margin=False, device='cpu'):
 		super(LossMarginCenter, self).__init__()
 		self.n_classes = n_classes
@@ -60,7 +60,7 @@ class LossMarginCenter(nn.Module):
 		# distance between the features and the class center of their label
 		distances = all_distances[mask]
 		if not self.min_margin:
-			# if not using the minimum margin, compute the "other" labels to be used for computing the margin
+			# if not using the minimum margin, compute the 'other' labels to be used for computing the margin
 			index = torch.randint(self.n_classes, (labels.shape[0],)).to(labels.device)
 			other_labels = labels + index
 			other_labels[other_labels >= self.n_classes] = other_labels[other_labels >= self.n_classes] - self.n_classes
@@ -69,7 +69,7 @@ class LossMarginCenter(nn.Module):
 			# distance between the features and the class center of another (random) label
 			other_distances = all_distances[mask_other]
 		else:
-			# if using the minimum margin, compute the "other" distances for each sample and take the minimum
+			# if using the minimum margin, compute the 'other' distances for each sample and take the minimum
 			other = torch.FloatTensor(batch_size, self.n_classes - 1).cuda()
 			for i in range(batch_size):
 				other[i] = (all_distances[i, mask[i, :] == 0])

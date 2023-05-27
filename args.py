@@ -1,35 +1,337 @@
 import argparse
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--dataset', '-d', default='FLO', help='dataset name (folder containing the res101.mat and att_splits.mat files)')
-parser.add_argument('--dataroot', '-p', default='./data', help='path to dataset')
-parser.add_argument('--split', '-s', default='', help='name of the split (e.g. \'_gcs\', \'_mas\', etc.)')
-parser.add_argument('--seed', type=int, help='manual seed (for reproducibility)')
-parser.add_argument('--n_features', type=int, default=2048, help='size of visual features')
-parser.add_argument('--n_attributes', type=int, default=85, help='size of semantic features')
-parser.add_argument("--latent_size", type=int, default=85, help='size of the latent z vector')
-parser.add_argument('--features_per_class', type=int, default=1800, help='number features to generate per class')
-parser.add_argument('--batch_size', type=int, default=64, help='input batch size')
-parser.add_argument("--hidden_size", type=int, default=4096, help='size of the hidden layers')
-parser.add_argument('--n_epochs', type=int, default=30, help='number of epochs to train for')
-parser.add_argument('--n_classes', type=int, default=50, help='number of all classes')
-parser.add_argument('--n_critic_iters', type=int, default=5, help='number of critic training iterations per epoch')
-parser.add_argument('--n_loops', type=int, default=2, help='number of iterations per epoch')
-parser.add_argument('--beta1', type=float, default=0.5, help='beta1 for adam')
-parser.add_argument('--freeze_dec', action='store_true', default=False, help='freeze decoder for fake samples')
-parser.add_argument('--lr', type=float, default=0.001, help='learning rate of the GAN')
-parser.add_argument('--lr_feedback', type=float, default=0.0001, help='learning rate of the feedback module')
-parser.add_argument('--lr_decoder', type=float, default=0.0001, help='learning rate of the decoder')
-parser.add_argument('--lr_cls', type=float, default=0.001, help='learning rate of the softmax classifier')
-parser.add_argument('--weight_gp', type=float, default=10, help='gradient penalty regularizer')
-parser.add_argument('--weight_precls', type=float, default=1, help='preclassifier loss regularizer')
-parser.add_argument('--weight_critic', type=int, default=10, help='critic loss regularizer')
-parser.add_argument('--weight_generator', type=int, default=10, help='generator loss regularizer')
-parser.add_argument('--weight_feed_train', type=float, default=1.0, help='feedback output weight for training')
-parser.add_argument('--weight_feed_eval', type=float, default=1.0, help='feedback output weight for evaluation')
-parser.add_argument('--weight_recons', type=float, default=1.0, help='reconstruction loss regularizer')
-parser.add_argument('--center_margin', type=float, default=150, help='the margin in the SAMC loss')
-parser.add_argument('--weight_margin', type=float, default=0.5, help='the weight for the SAMC loss')
-parser.add_argument('--weight_center', type=float, default=0.5, help='the weight for inter-class (vs. intra-class) distance in the SAMC loss')
+# Define the default values for each dataset
+defaults = {
+	'CLSWGAN': {
+		'AWA2': {
+			'seed': 9182,
+			'n_classes': 50,
+			'n_features': 2048,
+			'n_attributes': 85,
+			'latent_size': 85,
+			'hidden_size': 4096,
+			'features_per_class': 1800,
+			'n_epochs': 30,
+			'n_critic_iters': 5,
+			'n_loops': 2,
+			'lr': 0.00001,
+			'lr_cls': 0.001,
+			'beta1': 0.5,
+			'batch_size': 64,
+			'weight_gp': 10,
+			'weight_precls': 0.01
+		},
+		'CUB': {
+			'seed': 3483,
+			'n_classes': 200,
+			'n_features': 2048,
+			'n_attributes': 312,
+			'latent_size': 312,
+			'hidden_size': 4096,
+			'features_per_class': 300,
+			'n_epochs': 56,
+			'n_critic_iters': 5,
+			'n_loops': 2,
+			'lr': 0.0001,
+			'lr_cls': 0.001,
+			'beta1': 0.5,
+			'batch_size': 64,
+			'weight_gp': 10,
+			'weight_precls': 0.01
+		},
+		'FLO': {
+			'seed': 806,
+			'n_classes': 102,
+			'n_features': 2048,
+			'n_attributes': 1024,
+			'latent_size': 1024,
+			'hidden_size': 4096,
+			'features_per_class': 1200,
+			'n_epochs': 80,
+			'n_critic_iters': 5,
+			'n_loops': 2,
+			'lr': 0.0001,
+			'lr_cls': 0.001,
+			'beta1': 0.5,
+			'batch_size': 64,
+			'weight_gp': 10,
+			'weight_precls': 0.1
+		},
+		'SUN': {
+			'seed': 4115,
+			'n_classes': 717,
+			'n_features': 2048,
+			'n_attributes': 102,
+			'latent_size': 102,
+			'hidden_size': 4096,
+			'features_per_class': 400,
+			'n_epochs': 40,
+			'n_critic_iters': 5,
+			'n_loops': 2,
+			'lr': 0.0002,
+			'lr_cls': 0.001,
+			'beta1': 0.5,
+			'batch_size': 64,
+			'weight_gp': 10,
+			'weight_precls': 0.01
+		}
+	},
+	'TFVAEGAN': {
+		'AWA2': {
+			'seed': 9182,
+			'n_classes': 50,
+			'n_features': 2048,
+			'n_attributes': 85,
+			'latent_size': 85,
+			'hidden_size': 4096,
+			'features_per_class': 1800,
+			'n_epochs': 30,
+			'n_critic_iters': 5,
+			'freeze_dec': True,
+			'n_loops': 2,
+			'lr': 0.00001,
+			'lr_feedback': 0.0001,
+			'lr_decoder': 0.0001,
+			'lr_cls': 0.001,
+			'beta1': 0.5,
+			'batch_size': 64,
+			'weight_gp': 10,
+			'weight_critic': 10,
+			'weight_generator': 10,
+			'weight_feed_train': 0.01,
+			'weight_feed_eval': 0.01,
+			'weight_recons': 0.1
+		},
+		'CUB': {
+			'seed': 3483,
+			'n_classes': 200,
+			'n_features': 2048,
+			'n_attributes': 312,
+			'latent_size': 312,
+			'hidden_size': 4096,
+			'features_per_class': 300,
+			'n_epochs': 56,
+			'n_critic_iters': 5,
+			'freeze_dec': False,
+			'n_loops': 2,
+			'lr': 0.0001,
+			'lr_feedback': 0.00001,
+			'lr_decoder': 0.0001,
+			'lr_cls': 0.001,
+			'beta1': 0.5,
+			'batch_size': 64,
+			'weight_gp': 10,
+			'weight_critic': 10,
+			'weight_generator': 10,
+			'weight_feed_train': 1,
+			'weight_feed_eval': 1,
+			'weight_recons': 0.1
+		},
+		'FLO': {
+			'seed': 806,
+			'n_classes': 102,
+			'n_features': 2048,
+			'n_attributes': 1024,
+			'latent_size': 1024,
+			'hidden_size': 4096,
+			'features_per_class': 1200,
+			'n_epochs': 80,
+			'n_critic_iters': 5,
+			'freeze_dec': False,
+			'n_loops': 2,
+			'lr': 0.0001,
+			'lr_feedback': 0.00001,
+			'lr_decoder': 0.0001,
+			'lr_cls': 0.001,
+			'beta1': 0.5,
+			'batch_size': 64,
+			'weight_gp': 10,
+			'weight_critic': 10,
+			'weight_generator': 10,
+			'weight_feed_train': 0.5,
+			'weight_feed_eval': 0.5,
+			'weight_recons': 0.01
+		},
+		'SUN': {
+			'seed': 4115,
+			'n_classes': 717,
+			'n_features': 2048,
+			'n_attributes': 102,
+			'latent_size': 102,
+			'hidden_size': 4096,
+			'features_per_class': 400,
+			'n_epochs': 40,
+			'n_critic_iters': 5,
+			'freeze_dec': False,
+			'n_loops': 2,
+			'lr': 0.001,
+			'lr_feedback': 0.0001,
+			'lr_decoder': 0.0001,
+			'lr_cls': 0.0005,
+			'beta1': 0.5,
+			'batch_size': 64,
+			'weight_gp': 10,
+			'weight_critic': 1,
+			'weight_generator': 1,
+			'weight_feed_train': 0.1,
+			'weight_feed_eval': 0.01,
+			'weight_recons': 0.01
+		}
+	},
+	'FREE': {
+		'AWA2': {
+			'seed': 9182,
+			'n_classes': 50,
+			'n_features': 2048,
+			'n_attributes': 85,
+			'latent_size': 85,
+			'hidden_size': 4096,
+			'features_per_class': 4600,
+			'n_epochs': 30,
+			'n_critic_iters': 1,
+			'freeze_dec': True,
+			'n_loops': 2,
+			'lr': 0.00001,
+			'lr_cls': 0.001,
+			'beta1': 0.5,
+			'batch_size': 64,
+			'weight_gp': 10,
+			'weight_critic': 10,
+			'weight_generator': 10,
+			'weight_precls': 0.01,
+			'weight_recons': 0.001,
+			'center_margin': 50,
+			'weight_margin': 0.5,
+			'weight_center': 0.5
+		},
+		'CUB': {
+			'seed': 3483,
+			'n_classes': 200,
+			'n_features': 2048,
+			'n_attributes': 312,
+			'latent_size': 312,
+			'hidden_size': 4096,
+			'features_per_class': 700,
+			'n_epochs': 56,
+			'n_critic_iters': 1,
+			'freeze_dec': True,
+			'n_loops': 2,
+			'lr': 0.0001,
+			'lr_cls': 0.001,
+			'beta1': 0.5,
+			'batch_size': 64,
+			'weight_gp': 10,
+			'weight_critic': 10,
+			'weight_generator': 10,
+			'weight_precls': 0.01,
+			'weight_recons': 0.001,
+			'center_margin': 200,
+			'weight_margin': 0.5,
+			'weight_center': 0.8
+		},
+		'FLO': {
+			'seed': 806,
+			'n_classes': 102,
+			'n_features': 2048,
+			'n_attributes': 1024,
+			'latent_size': 1024,
+			'hidden_size': 4096,
+			'features_per_class': 2400,
+			'n_epochs': 80,
+			'n_critic_iters': 5,
+			'freeze_dec': True,
+			'n_loops': 2,
+			'lr': 0.0001,
+			'lr_cls': 0.001,
+			'beta1': 0.5,
+			'batch_size': 256,
+			'weight_gp': 10,
+			'weight_critic': 10,
+			'weight_generator': 10,
+			'weight_precls': 0.01,
+			'weight_recons': 0.001,
+			'center_margin': 200,
+			'weight_margin': 0.5,
+			'weight_center': 0.8
+		},
+		'SUN': {
+			'seed': 4115,
+			'n_classes': 717,
+			'n_features': 2048,
+			'n_attributes': 102,
+			'latent_size': 102,
+			'hidden_size': 4096,
+			'features_per_class': 300,
+			'n_epochs': 40,
+			'n_critic_iters': 1,
+			'freeze_dec': True,
+			'n_loops': 2,
+			'lr': 0.0002,
+			'lr_cls': 0.0005,
+			'beta1': 0.5,
+			'batch_size': 512,
+			'weight_gp': 10,
+			'weight_critic': 1,
+			'weight_generator': 1,
+			'weight_precls': 0.01,
+			'weight_recons': 0.1,
+			'center_margin': 120,
+			'weight_margin': 0.5,
+			'weight_center': 0.8
+		}
+	}
+}
 
-args = parser.parse_args()
+# For each param, define help message
+help_params = {
+	'seed': 'manual seed (for reproducibility)',
+	'n_classes': 'number of all classes',
+	'n_features': 'size of visual features',
+	'n_attributes': 'size of semantic features',
+	'latent_size': 'size of the latent z vector',
+	'hidden_size': 'size of the hidden layers',
+	'features_per_class': 'number features to generate per class',
+	'n_epochs': 'number of epochs to train for',
+	'batch_size': 'input batch size',
+	'n_critic_iters': 'number of critic training iterations per epoch',
+	'freeze_dec': 'freeze decoder for fake samples',
+	'n_loops': 'number of iterations per epoch',
+	'lr': 'learning rate of the GAN',
+	'lr_feedback': 'learning rate of the feedback module',
+	'lr_decoder': 'learning rate of the decoder',
+	'lr_cls': 'learning rate of the softmax classifier',
+	'beta1': 'beta1 for adam',
+	'weight_gp': 'gradient penalty regularizer',
+	'weight_precls': 'preclassifier loss regularizer',
+	'weight_critic': 'critic loss regularizer',
+	'weight_generator': 'generator loss regularizer',
+	'weight_feed_train': 'feedback output weight for training',
+	'weight_feed_eval': 'feedback output weight for evaluation',
+	'weight_recons': 'reconstruction loss regularizer',
+	'center_margin': 'the margin in the SAMC loss',
+	'weight_margin': 'the weight for the SAMC loss',
+	'weight_center': 'the weight for inter-class (vs. intra-class) distance in the SAMC loss'
+}
+
+def parse_args(model='CLSWGAN'):
+	# Create the first parser to get the dataset name
+	parser = argparse.ArgumentParser(add_help=False)
+	parser.add_argument('--dataset', '-d', default='AWA2', help='dataset name (folder containing the res101.mat and att_splits.mat files)')
+	parser.add_argument('--dataroot', '-p', default='../data', help='path to dataset')
+	parser.add_argument('--split', '-s', default='', help='name of the split (e.g. \'_gcs\', \'_mas\', etc.)')
+	# Parse the arguments
+	args, _ = parser.parse_known_args()
+	args.dataset = 'AWA2' if args.dataset == 'AWA' else args.dataset
+	# Create the second parser to get the model parameters
+	subparser = argparse.ArgumentParser(add_help=True, parents=[parser])
+	# Add model- and dataset-specific parameters
+	for param, value in defaults[model][args.dataset].items():
+		subparser.add_argument('--' + param, type=type(value), default=value, help=help_params[param])
+	# Parse the new arguments
+	args, _ = subparser.parse_known_args(namespace=args)
+	args.dataset = 'AWA2' if args.dataset == 'AWA' else args.dataset
+	# Print the arguments
+	print('Arguments:')
+	for param, value in vars(args).items():
+		print('\t' + param + ': ' + str(value))
+	return args

@@ -37,16 +37,10 @@ pip install -r requirements.txt
 
 Before running the code, you need to download the datasets in the `data` folder. 4 datasets are currently supported: AWA2, CUB, SUN, and FLO. The datasets are available [here](http://datasets.d2.mpi-inf.mpg.de/xian/xlsa17.zip) (if the link doesn't work, copy it in a new tab instead of clicking on it). For each dataset, you only require 2 of the downloaded files: `res101.mat` with the features, and `att_splits.mat` with the attributes. Make sure you have these files in the appropriate folder for each dataset, e.g. `data/awa/res101.mat` and `data/awa/att_splits.mat` for the AWA2 dataset.
 
-You can either run the scripts directly with your own arguments (defined in `args.py`), e.g.:
+You can run the scripts directly with the arguments defined in `args.py`, e.g.:
 
 ```bash
 python run_clswgan.py --dataset AWA2 --split gcs --n_epochs 20
-```
-
-or you can use the provided scripts to run the experiments from the paper:
-
-```bash
-python scripts/run_clswgan_awa_gzsl.py
 ```
 
 This will train and evaluate the model on the selected dataset and split.

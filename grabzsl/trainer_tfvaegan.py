@@ -57,7 +57,6 @@ class TrainerTfvaegan():
 		# init tensors
 		self.batch_features = torch.FloatTensor(batch_size, n_features).to(device)
 		self.batch_attributes = torch.FloatTensor(batch_size, n_attributes).to(device)
-		self.batch_noise = torch.FloatTensor(batch_size, latent_size).to(device)
 		self.one = torch.tensor(1, dtype=torch.float).to(device)
 		self.mone = self.one * -1
 

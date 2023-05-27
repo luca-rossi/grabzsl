@@ -1,11 +1,13 @@
 import random
 import torch
 import torch.backends.cudnn as cudnn
-from args import args
+from args import parse_args
 from grabzsl.data import Data
 from grabzsl.trainer_classifier import TrainerClassifier
 from grabzsl.trainer_clswgan import TrainerClswgan
 
+# parse arguments
+args = parse_args('CLSWGAN')
 # init seed and cuda
 if args.seed is None:
 	args.seed = random.randint(1, 10000)

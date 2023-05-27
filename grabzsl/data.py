@@ -12,11 +12,11 @@ class Data():
 		Load the dataset.
 		'''
 		# read features and labels
-		matcontent = sio.loadmat(dataroot + "/" + dataset_name + "/res101.mat")
+		matcontent = sio.loadmat(dataroot + '/' + dataset_name + '/res101.mat')
 		feature = matcontent['features'].T
 		label = matcontent['labels'].astype(int).squeeze() - 1
 		# read attributes and locations data
-		matcontent = sio.loadmat(dataroot + "/" + dataset_name + "/att_splits" + split + ".mat")
+		matcontent = sio.loadmat(dataroot + '/' + dataset_name + '/att_splits' + split + '.mat')
 		self.attributes = torch.from_numpy(matcontent['att'].T).float()
 		# normalize, just in case (the datasets used here are already normalized)
 		self.attributes /= self.attributes.pow(2).sum(1).sqrt().unsqueeze(1).expand(self.attributes.size(0), self.attributes.size(1))
@@ -46,11 +46,14 @@ class Data():
 		print('Number of classes: %d (seen: %d, unseen: %d)' % (self.attributes.size(0), self.seen_classes.size(0), self.unseen_classes.size(0)))
 		print('Number of attributes:', self.attributes.size(1))
 		print('Training samples:', self.train_X.size(0))
+		print('Testing samples (seen):', self.test_seen_X.size(0))
+		print('Testing samples (unseen):', self.test_unseen_X.size(0))
+		print('Total samples:', self.train_X.size(0) + self.test_seen_X.size(0) + self.test_unseen_X.size(0))
 
 	def map_labels(self, label, classes):
 		'''
-		Map each element in the input label tensor to a corresponding index in the "classes" tensor.
-		The resulting "mapped_label" tensor contains indices corresponding to the input "classes" tensor, rather than the original class labels.
+		Map each element in the input label tensor to a corresponding index in the 'classes' tensor.
+		The resulting 'mapped_label' tensor contains indices corresponding to the input 'classes' tensor, rather than the original class labels.
 		'''
 		mapped_label = torch.LongTensor(label.size())
 		for i in range(classes.size(0)):
