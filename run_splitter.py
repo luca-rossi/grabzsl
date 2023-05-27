@@ -3,8 +3,8 @@ import os
 from grabzsl.splitter import Splitter
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--dataset', '-d', default='FLO', help='dataset name (folder containing the res101.mat and att_splits.mat files)')
-parser.add_argument('--dataroot', '-p', default='../data', help='path to dataset')
+parser.add_argument('--dataset', '-d', default='AWA2', help='dataset name (folder containing the res101.mat and att_splits.mat files)')
+parser.add_argument('--dataroot', '-p', default='./data', help='path to dataset')
 parser.add_argument('--split', '-s', type=str, default=None, help='type of split to use for the new dataset generation (\'gcs\', \'ccs\', \'mas\')')
 parser.add_argument('--inverse', '-i', action='store_true', help='use inverse split')
 parser.add_argument('--mas_k', '-m', type=int, default=40, help='number of attributes to keep for MAS split')
