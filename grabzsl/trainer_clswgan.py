@@ -1,3 +1,4 @@
+import os
 import torch
 from grabzsl.losses import loss_grad_penalty_fn
 from grabzsl.models import Generator, Critic
@@ -9,7 +10,7 @@ class TrainerClswgan():
 	'''
 	def __init__(self, data, dataset_name, pre_classifier, n_features=2048, n_attributes=85, latent_size=85, features_per_class=1800,
 				batch_size=64, hidden_size=4096, n_epochs=30, n_classes=50, n_critic_iters=5, lr=0.001, lr_cls=0.001, beta1=0.5,
-				weight_gp=10, weight_precls=1, device='cpu', verbose=False):
+				weight_gp=10, weight_precls=1, save_every=0, device='cpu', verbose=False):
 		'''
 		Setup models, optimizers, and other parameters.
 		'''
@@ -28,16 +29,17 @@ class TrainerClswgan():
 		self.lr_cls = lr_cls
 		self.weight_gp = weight_gp
 		self.weight_precls = weight_precls
+		self.save_every = save_every
 		self.device = device
 		self.verbose = verbose
-		# load models
+		# init models
 		self.model_generator = Generator(n_features, n_attributes, latent_size, hidden_size).to(device)
 		self.model_critic = Critic(n_features, n_attributes, hidden_size).to(device)
 		print(self.model_generator)
 		print(self.model_critic)
-		# setup optimizers
-		self.opt_critic = torch.optim.Adam(self.model_critic.parameters(), lr=lr, betas=(beta1, 0.999))
+		# init optimizers
 		self.opt_generator = torch.optim.Adam(self.model_generator.parameters(), lr=lr, betas=(beta1, 0.999))
+		self.opt_critic = torch.optim.Adam(self.model_critic.parameters(), lr=lr, betas=(beta1, 0.999))
 		# define pre-classifier loss
 		self.loss_classifier_fn = torch.nn.NLLLoss().to(device)
 		# init tensors
@@ -56,15 +58,60 @@ class TrainerClswgan():
 		self.best_gzsl_acc_unseen = 0
 		self.best_gzsl_acc_H = 0
 		self.best_zsl_acc = 0
-		for epoch in range(self.n_epochs):
+		start_epoch = self.__load_checkpoint()
+		for epoch in range(start_epoch, self.n_epochs):
 			self.__train_epoch(epoch)
 			self.__eval_epoch()
+			if self.save_every > 0 and epoch > 0 and (epoch + 1) % self.save_every == 0:
+				self.__save_checkpoint(epoch)
 		print('Dataset', self.dataset_name)
 		print('The best ZSL unseen accuracy is %.4f' % self.best_zsl_acc.item())
 		print('The best GZSL seen accuracy is %.4f' % self.best_gzsl_acc_seen.item())
 		print('The best GZSL unseen accuracy is %.4f' % self.best_gzsl_acc_unseen.item())
 		print('The best GZSL H is %.4f' % self.best_gzsl_acc_H.item())
 
+	def __load_checkpoint(self):
+		'''
+		Load a checkpoint if it exists.
+		'''
+		start_epoch = 0
+		checkpoints = [f for f in os.listdir('checkpoints') if f.startswith(f'CLSWGAN_{self.dataset_name}')]
+		if len(checkpoints) > 0:
+			print('Loading checkpoint...')
+			checkpoint = torch.load(f'checkpoints/{checkpoints[0]}')
+			start_epoch = checkpoint['epoch'] + 1
+			self.model_generator.load_state_dict(checkpoint['model_generator'])
+			self.model_critic.load_state_dict(checkpoint['model_critic'])
+			self.opt_generator.load_state_dict(checkpoint['opt_generator'])
+			self.opt_critic.load_state_dict(checkpoint['opt_critic'])
+			self.best_gzsl_acc_seen = checkpoint['best_gzsl_acc_seen']
+			self.best_gzsl_acc_unseen = checkpoint['best_gzsl_acc_unseen']
+			self.best_gzsl_acc_H = checkpoint['best_gzsl_acc_H']
+			self.best_zsl_acc = checkpoint['best_zsl_acc']
+			torch.set_rng_state(checkpoint['random_state'])
+			print('Checkpoint loaded.')
+		return start_epoch
+
+	def __save_checkpoint(self, epoch):
+		'''
+		Save a checkpoint.
+		'''
+		print('Saving checkpoint...')
+		checkpoint = {
+			'epoch': epoch,
+			'model_generator': self.model_generator.state_dict(),
+			'model_critic': self.model_critic.state_dict(),
+			'opt_generator': self.opt_generator.state_dict(),
+			'opt_critic': self.opt_critic.state_dict(),
+			'best_gzsl_acc_seen': self.best_gzsl_acc_seen,
+			'best_gzsl_acc_unseen': self.best_gzsl_acc_unseen,
+			'best_gzsl_acc_H': self.best_gzsl_acc_H,
+			'best_zsl_acc': self.best_zsl_acc,
+			'random_state': torch.get_rng_state(),
+		}
+		torch.save(checkpoint, f'checkpoints/CLSWGAN_{self.dataset_name}.pt')
+		print('Checkpoint saved.')
+		
 	def __train_epoch(self, epoch):
 		'''
 		Train the models for one epoch: train the critic for n_critic_iters steps, then train the generator for one step.

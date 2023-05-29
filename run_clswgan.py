@@ -35,5 +35,5 @@ clswgan = TrainerClswgan(data, args.dataset, pre_classifier, n_features=args.n_f
 			 			latent_size=data.get_n_attributes(), features_per_class=args.features_per_class, batch_size=args.batch_size,
 						hidden_size=args.hidden_size, n_epochs=args.n_epochs, n_classes=data.get_n_classes(),
 						n_critic_iters=args.n_critic_iters, lr=args.lr, lr_cls=args.lr_cls, beta1=args.beta1,
-						weight_gp=args.weight_gp, weight_precls=args.weight_precls, device=device)
+						weight_gp=args.weight_gp, weight_precls=args.weight_precls, save_every=args.save_every, device=device)
 clswgan.fit()

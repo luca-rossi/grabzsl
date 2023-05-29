@@ -31,5 +31,5 @@ free = TrainerFree(data, args.dataset, n_features=args.n_features, n_attributes=
 				lr=args.lr, lr_cls=args.lr_cls, beta1=args.beta1, freeze_dec=args.freeze_dec,
 				weight_gp=args.weight_gp, weight_critic=args.weight_critic, weight_generator=args.weight_generator,
 				center_margin=args.center_margin, weight_margin=args.weight_margin, weight_center=args.weight_center,
-				weight_recons=args.weight_recons, min_margin=min_margin, device=device)
+				weight_recons=args.weight_recons, min_margin=min_margin, save_every=args.save_every, device=device)
 free.fit()
