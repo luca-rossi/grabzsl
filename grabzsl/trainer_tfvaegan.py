@@ -39,7 +39,7 @@ class TrainerTfvaegan():
 		self.save_every = save_every
 		self.device = device
 		self.verbose = verbose
-		# load models
+		# init models
 		self.model_encoder = Encoder(n_features, n_attributes, latent_size, hidden_size).to(device)
 		self.model_generator = Generator(n_features, n_attributes, latent_size, hidden_size, use_sigmoid=True).to(device)
 		self.model_critic = Critic(n_features, n_attributes, hidden_size).to(device)
@@ -50,7 +50,7 @@ class TrainerTfvaegan():
 		print(self.model_critic)
 		print(self.model_feedback)
 		print(self.model_decoder)
-		# setup optimizers
+		# init optimizers
 		self.opt_encoder = torch.optim.Adam(self.model_encoder.parameters(), lr=lr)
 		self.opt_generator = torch.optim.Adam(self.model_generator.parameters(), lr=lr, betas=(beta1, 0.999))
 		self.opt_critic = torch.optim.Adam(self.model_critic.parameters(), lr=lr, betas=(beta1, 0.999))
