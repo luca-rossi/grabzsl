@@ -314,7 +314,7 @@ help_params = {
 }
 
 def parse_args(model='CLSWGAN'):
-	# Create the first parser to get the dataset name
+	# Create the first parser to get the dataset name and dataset-independent parameters
 	parser = argparse.ArgumentParser(add_help=False)
 	parser.add_argument('--dataset', '-d', default='AWA2', help='dataset name (folder containing the res101.mat and att_splits.mat files)')
 	parser.add_argument('--dataroot', '-p', default='./data', help='path to dataset')
