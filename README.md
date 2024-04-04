@@ -1,6 +1,23 @@
 # Generalizability and Robustness Evaluation of Attribute-Based Zero-Shot Learning
 
-This repository contains the code to replicate the experiments in the paper *Generalizability and Robustness Evaluation of Attribute-Based Zero-Shot Learning* (forthcoming), as well as an improved implementation for the evaluated models (CLSWGAN, TFVAEGAN, and FREE).
+This repository contains the code to replicate the experiments in the paper *Generalizability and Robustness Evaluation of Attribute-Based Zero-Shot Learning*, as well as an improved implementation for the evaluated models (CLSWGAN, TFVAEGAN, and FREE).
+
+## Citation
+
+If you find this work useful, please consider citing the paper:
+
+```bibtex
+@article{rossi2024generalizability
+  title = {Generalizability and robustness evaluation of attribute-based zero-shot learning},
+  author = {Luca Rossi and Maria Chiara Fiorentino and Adriano Mancini and Marina Paolanti and Riccardo Rosati and Primo Zingaretti},
+  journal = {Neural Networks},
+  pages = {106278},
+  year = {2024},
+  issn = {0893-6080},
+  doi = {https://doi.org/10.1016/j.neunet.2024.106278},
+  url = {https://www.sciencedirect.com/science/article/pii/S0893608024002028}
+}
+```
 
 ## Abstract
 
@@ -17,13 +34,13 @@ This repository consists of four main parts:
 - `run_clswgan.py`: PyTorch implementation of the CLSWGAN model from the paper [Feature Generating Networks for Zero-Shot Learning](https://arxiv.org/abs/1712.00981).
 - `run_tfvaegan.py`: PyTorch implementation of the TFVAEGAN model from the paper [Latent Embedding Feedback and Discriminative Features for Zero-Shot Classification](https://www.ecva.net/papers/eccv_2020/papers_ECCV/papers/123670477.pdf).
 - `run_free.py`: PyTorch implementation of the FREE model from the paper [FREE: Feature Refinement for Generalized Zero-Shot Learning](https://arxiv.org/abs/2107.13807).
-- `run_splitter.py`: Implementation of the *splitter* proposed in the paper Generalizability and Robustness Evaluation of Attribute-Based Zero-Shot Learning (forthcoming).
+- `run_splitter.py`: Implementation of the *splitter* proposed in the paper [Generalizability and Robustness Evaluation of Attribute-Based Zero-Shot Learning](https://www.sciencedirect.com/science/article/pii/S0893608024002028)
 
 The code for the three models has been adapted from the original repositories ([CLSWGAN](https://www.mpi-inf.mpg.de/departments/computer-vision-and-machine-learning/research/zero-shot-learning/feature-generating-networks-for-zero-shot-learning/), [TFVAEGAN](https://github.com/akshitac8/tfvaegan), [FREE](https://github.com/shiming-chen/FREE)). The code provided here is a simplified version of the original code which has been heavily refactored, documented, and optimized for clarity and extensibility. The code for the splitter is original.
 
 The splitter uses particular methods to generate new splits of seen/unseen classes and attributes in the original dataset. Four splitting methods are currently implemented, although more will be added in the future: Greedy Class Split (GCS), Clustered Class Split (CCS), Minimal Attribute Split (MAS), and PCA Attribute Split (PAS).
 
-The three models are trained and tested on the generated splits to evaluate their generalizability and robustness. The results are reported in the forthcoming paper.
+The three models are trained and tested on the generated splits to evaluate their generalizability and robustness. The results are reported in the paper.
 
 ## Installation
 
